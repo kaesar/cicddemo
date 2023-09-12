@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+npm-debug.log*
+*.log
+*.tgz
+*.pid*
+pids
+.npm
+.env
+.package-lock.json
+.DS_Store
+Thumbs.db
