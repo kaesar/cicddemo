@@ -1,14 +1,10 @@
-# Drones
-
-[[_TOC_]]
+# CI-CD Demo
 
 ---
 
-:scroll: **START**
-
 ## About the example
 
-We have devices or drones that are capable of carrying things, and capable of delivering small loads (payload). For our use case the model has...
+Think that you have devices or drones that are capable of carrying and delivering things (payload). For this use case, a basic model has the following...
 
 - serial number (100 characters max);
 - model (Lightweight, Middleweight, Cruiserweight, Heavyweight);
@@ -19,7 +15,7 @@ We have devices or drones that are capable of carrying things, and capable of de
 
 The service, via REST API, allows clients to communicate with the devices. The specific communicaiton is outside the scope. 
 
-> With this exercise is included CI/CD capabilities with Terraform + AWS. 
+> With this exercise I want to include CI/CD capabilities with Docker, Terraform & AWS App Runner. 
 
 ---
 
@@ -30,6 +26,7 @@ The service, via REST API, allows clients to communicate with the devices. The s
 ```
 democicd/
 ├── __tests__/
+├── iac/
 ├── dist/
 │   └── index.js
 ├── data/
@@ -86,5 +83,3 @@ GET    | /drones/:id
 GET    | /drones/idle
 
 ---
-
-:scroll: **END** 
