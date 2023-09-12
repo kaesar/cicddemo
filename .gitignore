@@ -1,6 +1,7 @@
 node_modules/
 dist/
 coverage/
+package-lock.json
 npm-debug.log*
 *.log
 *.tgz
@@ -8,6 +9,5 @@ npm-debug.log*
 pids
 .npm
 .env
-.package-lock.json
 .DS_Store
 Thumbs.db
