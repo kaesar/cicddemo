@@ -10,6 +10,10 @@ app.use(bodyParser.json());
 app.use('/api', apiRoutes);
 
 app.get('/', (req, res) => {
+  res.send(`Hi there. Time is ${new Date().toLocaleString()}`);
+});
+
+app.get('/health', (req, res) => {
   res.send({ platform: os.type(), osVersion: os.version(), nodeVersion: process.version });
 });
 

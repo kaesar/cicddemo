@@ -19,18 +19,18 @@ democicd/
 ├── __tests__/
 ├── iac/
 ├── dist/
-│ └── index.js
+│   └── index.js
 ├── data/
-│ └── database.json
+│   └── database.json
 ├── src/
 │ ├── adaptador/
-││└── dbAccess.ts
+│ │   └── dbAccess.ts
 │ ├── handler/
-│ │ └── droneHandler.ts
+│ │   └── droneHandler.ts
 │ ├── modelos/
-│ │ ├── models.ts
+│ │   └── models.ts
 │ ├── rutas/
-│ │ └── apiRoutes.ts
+│ │   └── apiRoutes.ts
 │ └── index.ts
 └── package.json
 ```
