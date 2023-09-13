@@ -1,0 +1,52 @@
+trigger:
+- main  # Cambia 'main' por la rama en la que deseas desencadenar el pipeline
+
+pr:
+- '*'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  dockerRegistryServiceConnection: 'Nombre de la conexión del registro de Docker en Azure DevOps'
+
+stages:
+- stage: Build
+  displayName: 'Construir la imagen de Docker'
+  jobs:
+  - job: BuildDockerImage
+    displayName: 'Construir y publicar la imagen de Docker'
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: '$(dockerRegistryServiceConnection)'
+        repository: 'nombre-de-tu-repo-en-docker'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: 'latest'
+
+- stage: Deploy
+  displayName: 'Implementar en AWS App Runner'
+  jobs:
+  - job: DeployToAWSAppRunner
+    displayName: 'Implementar en AWS App Runner'
+    steps:
+    - script: |
+        # Configura las credenciales de AWS
+        aws configure set aws_access_key_id $(AWS_ACCESS_KEY_ID)
+        aws configure set aws_secret_access_key $(AWS_SECRET_ACCESS_KEY)
+        aws configure set region $(AWS_REGION)
+        
+        # Ejecuta Terraform para implementar la infraestructura
+        cd iac
+        terraform init
+        terraform apply -auto-approve
+      displayName: 'Ejecutar Terraform para implementar'
+
+    - task: AwsWebAppDeployment@4
+      inputs:
+        awsCredentials: 'AWS Service Connection'
+        applicationType: 'Node.js'
+        deploymentType: 'AWSAppRunner'
+        serviceName: 'MyDroneService'  # Nombre de tu servicio de App Runner
+        sourcePath: '$(Build.SourcesDirectory)'
