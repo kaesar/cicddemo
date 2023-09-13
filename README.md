@@ -1,85 +1,85 @@
-# CI-CD Demo
+# Demostración CI-CD
 
 ---
 
-## About the example
+## Sobre el ejemplo
 
-Think that you have devices or drones that are capable of carrying and delivering things (payload). For this use case, a basic model has the following...
+Piensa que tienes dispositivos o drones que son capaces de transportar y entregar cosas (carga útil). El servicio, el cual se encuentra escrito en Typescript bajo Node.js/Express y pruebas con Jest, permitiría a los clientes comunicarse con los dispositivos. La comunicación específica está fuera del ámbito. 
 
-- serial number (100 characters max);
-- model (Lightweight, Middleweight, Cruiserweight, Heavyweight);
-- weight limit (500gr max);
-- battery capacity (percentage);
-- state (IDLE by default, then LOADED).
-- payload (object, without specification by the moment)
-
-The service, via REST API, allows clients to communicate with the devices. The specific communicaiton is outside the scope. 
-
-> With this exercise I want to include CI/CD capabilities with Docker, Terraform & AWS App Runner. 
+> Con este ejercicio quiero incluir capacidades de CI/CD con Docker, Terraform & AWS App Runner. 
 
 ---
 
 ## Getting Started
 
-### Project Folder
+### Carpeta del Proyecto
 
 ```
 democicd/
 ├── __tests__/
 ├── iac/
 ├── dist/
-│   └── index.js
+│ └── index.js
 ├── data/
-│   └── database.json
+│ └── database.json
 ├── src/
-│   ├── adapter/
-│   │   └── dbAccess.ts
-│   ├── handler/
-│   │   └── droneHandler.ts
-│   ├── models/
-│   │   ├── models.ts
-│   ├── routes/
-│   │   └── apiRoutes.ts
-│   └── index.ts
+│ ├── adaptador/
+││└── dbAccess.ts
+│ ├── handler/
+│ │ └── droneHandler.ts
+│ ├── modelos/
+│ │ ├── models.ts
+│ ├── rutas/
+│ │ └── apiRoutes.ts
+│ └── index.ts
 └── package.json
 ```
 
-### Build the Bundle
+### Build
 
-To bundle just use a shell and execute from the folder...
+Para hacer el bundle basta con usar un shell y ejecutar desde la carpeta....
 
 ```bash
 npm run build
 ```
 
-### Check the Tests
+### Comprobar las pruebas
 
-To tests just use a shell and execute from the folder...
+Para las pruebas simplemente usa una shell y ejecuta desde la carpeta...
 
 ```bash
 npm test
 ```
 
-> Insted of this, you can use: `jest --coverage --coverageReporters="json-summary"`
+> En lugar de esto, puedes usar: `jest --coverage --coverageReporters="json-summary"`
 
-### Launch the Service
+### Lanzar el Servicio
 
-To launch just use a shell and execute from the folder...
+Para lanzarlo simplemente usa un shell y ejecútalo desde la carpeta...
 
 ```bash
 npm start
 ```
 
-> Instead of this, you can use: `node dist/index.js`
+> En lugar de esto, puedes usar `node dist/index.js`
 
-### Main API's end-points
+### API's end-points
 
-Method | Path
+Metodo | Ruta
 ------ | --
 GET    | /drones
 POST   | /drones
 DELETE | /drones/:id
 GET    | /drones/:id
 GET    | /drones/idle
+
+Para este caso de uso, un modelo de datos básico tiene lo siguiente...
+
+- **serialNumber**: número de serie (64 caracteres máximo).
+- **model**: modelo.
+- **weightLimit**: límite de peso (500gr máx).
+- **batteryCapacity**: capacidad de la batería (porcentaje)
+- **state**: estado (IDLE por defecto, luego LOADED).
+- **payload**: Carga útil (objeto, sin especificar por el momento).
 
 ---
