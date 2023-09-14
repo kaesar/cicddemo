@@ -16,8 +16,8 @@ COPY . .
 # 6. Build the bundle
 RUN npm run build
 
-# 7. Clean source code & touch executable dist.
-RUN rm -rf src && chmod +x dist/index.js
+# 7. Touch executable dist. & clean source code
+RUN chmod +x dist/index.js && rm -rf src
 
 # 8. Expose API
 EXPOSE 3000

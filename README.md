@@ -83,6 +83,17 @@ Para este caso de uso, un modelo de datos básico tiene lo siguiente...
 - **state**: estado (IDLE por defecto, luego LOADED).
 - **payload**: Carga útil (objeto, sin especificar por el momento).
 
+Ejemplo de datos para POST:
+
+```json
+{
+    "serialNumber": "d20",
+    "model": "Middleweight",
+    "weightLimit": 350,
+    "batteryCapacity": 20
+}
+```
+
 ---
 
 ## Algunos comandos Docker y otros
