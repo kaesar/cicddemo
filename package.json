@@ -2,7 +2,7 @@
   "name": "dev_drones-3e54dd03-de82-e96b-22a7-06fb501858e3",
   "version": "1.0.0",
   "description": "API Drones",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "nodemon src/index.ts",
     "build": "tsc",
@@ -14,7 +14,7 @@
     "url": "git+https://oauth:glpat-2r4Q5zpjfpstAZCfPrFy@gitlab.com/musala_soft/DEV_DRONES-3e54dd03-de82-e96b-22a7-06fb501858e3.git"
   },
   "keywords": [],
-  "author": "@kaesarandres <kaesar.andres@gmail.com>",
+  "author": "César Andrés A. <kaesar.andres@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://gitlab.com/musala_soft/DEV_DRONES-3e54dd03-de82-e96b-22a7-06fb501858e3/issues"

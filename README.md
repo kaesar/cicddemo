@@ -114,4 +114,10 @@ docker run -d -p 3000:3000 --name cicddemo cicddemo
 docker exec -it cicddemo /bin/sh
 
 docker stop cicddemo
+
+aws iam create-user --user-name cicd
+
+aws iam create-access-key --user-name cicd
+
+aws s3api create-bucket --bucket tfstate-demo-2023 -region us-east-1
 ```
