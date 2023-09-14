@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use('/api', apiRoutes);
 
 app.get('/', (req, res) => {
-  res.send(`Hi there. Time is ${new Date().toLocaleString()}`);
+  res.send(`<h2>Hi there!</h2><p>UTC Time is ${new Date().toLocaleString()}</p>`);
 });
 
 app.get('/health', (req, res) => {

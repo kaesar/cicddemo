@@ -23,15 +23,15 @@ democicd/
 ├── data/
 │   └── database.json
 ├── src/
-│ ├── adaptador/
-│ │   └── dbAccess.ts
-│ ├── handler/
-│ │   └── droneHandler.ts
-│ ├── modelos/
-│ │   └── models.ts
-│ ├── rutas/
-│ │   └── apiRoutes.ts
-│ └── index.ts
+│   ├── adaptador/
+│   │   └── dbAccess.ts
+│   ├── handler/
+│   │   └── droneHandler.ts
+│   ├── modelos/
+│   │   └── models.ts
+│   ├── rutas/
+│   │   └── apiRoutes.ts
+│   └── index.ts
 └── package.json
 ```
 
@@ -67,11 +67,12 @@ npm start
 
 Metodo | Ruta
 ------ | --
-GET    | /drones
-POST   | /drones
-DELETE | /drones/:id
-GET    | /drones/:id
-GET    | /drones/idle
+GET    | /api/drones
+POST   | /api/drones
+DELETE | /api/drones/:id
+GET    | /api/drones/:id
+GET    | /api/drones/idle
+GET    | /health
 
 Para este caso de uso, un modelo de datos básico tiene lo siguiente...
 
@@ -83,3 +84,23 @@ Para este caso de uso, un modelo de datos básico tiene lo siguiente...
 - **payload**: Carga útil (objeto, sin especificar por el momento).
 
 ---
+
+## Algunos comandos Docker y otros
+
+Ejemplo de algunos comandos con Docker y otros para validar en tu máquina, asumiendo que tienes instalado Docker bajo WSL (Windows Subsystem for Linux) o Colima (macOS/Linux: `colima sart`) y te encuentras ubicado dentro de la carpeta del proyecto...
+
+```bash
+npm run build
+
+node dist/index.js
+
+docker ps
+
+docker build -t cicddemo .
+
+docker run -d -p 3000:3000 --name cicddemo cicddemo
+
+docker exec -it cicddemo /bin/sh
+
+docker stop cicddemo
+```
