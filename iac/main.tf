@@ -1,8 +1,18 @@
 provider "aws" {
-  region = "us-east-1"  # Reemplaza con tu región deseada
+  region = "us-east-1"
 }
 
-resource "aws_iam_policy" "give_read_access_policy" {
+terraform {
+  backend "s3" {
+    bucket  = "tfstate-demo-2023"
+    key     = "cicddemo.tfstate"
+    region  = "us-east-1"
+    encrypt = true
+    shared_credentials_file = "./iac/.secretaws"
+  }
+}
+
+/*resource "aws_iam_policy" "give_read_access_policy" {
   name        = "GiveReadAccessPolicy"
   description = "Policy to allow read access to secrets manager"
 
@@ -37,7 +47,7 @@ resource "aws_iam_role" "apprunner_role" {
     name        = "GiveReadAccess"
     policy_json = aws_iam_policy.give_read_access_policy.json
   }
-}
+}*/
 
 resource "aws_apprunner_service" "my_drone_service" {
   service_name = "MyDroneService"
@@ -65,9 +75,9 @@ resource "aws_apprunner_service" "my_drone_service" {
     path = "/health"
   }
 
-  instance_configuration {
+  /*instance_configuration {
     instance_role_arn = aws_iam_role.apprunner_role.arn
-  }
+  }*/
 }
 
 /*resource "aws_apprunner_service" "my_drone_service" {
