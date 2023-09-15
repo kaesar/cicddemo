@@ -1,12 +1,14 @@
 # Demostración CI-CD
 
+**~ GitHub (Repo) ~ Docker (Container) ~ Jenkins (Pipeline) ~ Terraform (IaC) ~ AWS App Runner (Serverless Containers - Cloud)~**
+
 ---
 
 ## Sobre el ejemplo
 
-Piensa que tienes dispositivos o drones que son capaces de transportar y entregar cosas (carga útil). El servicio, el cual se encuentra escrito en Typescript bajo Node.js/Express y pruebas con Jest, permitiría a los clientes comunicarse con los dispositivos. La comunicación específica está fuera del ámbito. 
+Piensa que tienes dispositivos o drones que son capaces de transportar y entregar cosas (carga útil). El servicio, el cual se encuentra escrito en Typescript bajo Node.js/Express y pruebas con Jest, permitiría a los clientes comunicarse con los dispositivos. La comunicación específica está fuera del alcance. 
 
-> Con este ejercicio quiero incluir capacidades de CI/CD con Docker, Terraform & AWS App Runner. 
+> Con este ejercicio se busca incluir capacidades de CI/CD usando GitHub (Repo), Docker (Container), Jenkins (Pipeline), Terraform (IaC) & AWS App Runner (Serverless Containers - Cloud).
 
 ---
 
@@ -32,6 +34,7 @@ democicd/
 │   ├── rutas/
 │   │   └── apiRoutes.ts
 │   └── index.ts
+├── Jenkinsfile
 └── package.json
 ```
 
@@ -98,7 +101,7 @@ Ejemplo de datos para POST:
 
 ## Algunos comandos Docker y otros
 
-Ejemplo de algunos comandos con Docker y otros para validar en tu máquina, asumiendo que tienes instalado Docker bajo WSL (Windows Subsystem for Linux) o Colima (macOS/Linux: `colima sart`) y te encuentras ubicado dentro de la carpeta del proyecto...
+A continuación se presentan ejemplos de algunos comandos con Docker y otros para validar en tu máquina, asumiendo que tienes instalado Docker bajo WSL (Windows Subsystem for Linux) o Colima (macOS/Linux, iniciando con: `colima sart`) y te encuentras ubicado dentro de la carpeta del proyecto...
 
 ```bash
 npm run build
@@ -120,4 +123,16 @@ aws iam create-user --user-name cicd
 aws iam create-access-key --user-name cicd
 
 aws s3api create-bucket --bucket tfstate-demo-2023 -region us-east-1
+
+cd iac
+
+terraform init
+
+terraform validate
+
+terraform plan
+
+terraform apply -auto-approve
+
+terraform destroy
 ```

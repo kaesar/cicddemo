@@ -51,15 +51,15 @@ export class CdkStack extends cdk.Stack {
                         value: 'main'
                     },
                     codeConfiguration: {
-                        /*codeConfigurationValues: {
-                            startCommand: 'node dist/index.js',
-                            buildCommand: 'npm install',
+                        codeConfigurationValues: {
+                            buildCommand: 'npm install && npm run build',
+                            startCommand: 'npm start',
                             port: '3000',
                             runtime: 'NODEJS_16',
                             //runtimeEnvironmentSecrets: [{ name: '', value: '' }],
                             //runtimeEnvironmentVariables: [{ name: '', value: '' }],
-                        },*/
-                        configurationSource: 'API'  // 'REPOSITORY
+                        },
+                        configurationSource: 'API'  // 'REPOSITORY'
                     },
                 }
             },

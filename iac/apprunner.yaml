@@ -1,6 +1,0 @@
-version: 1
-services:
-  - name: my-drone-service
-    source:
-      image: your-docker-image-url
-    port: 3000

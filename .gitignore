@@ -2,6 +2,9 @@ node_modules/
 dist/
 coverage/
 iac/.secretaws
+iac/.terraform
+azure-pipeline.yaml
+apprunner.yaml
 package-lock.json
 npm-debug.log*
 *.log

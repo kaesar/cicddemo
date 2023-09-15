@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket  = "tfstate-demo-2023"
-    key     = "cicddemo.tfstate"
+    key     = "terraform.tfstate"
     region  = "us-east-1"
     encrypt = true
     shared_credentials_file = "./iac/.secretaws"
@@ -54,19 +54,25 @@ resource "aws_apprunner_service" "my_drone_service" {
 
   source_configuration {
     authentication_configuration {
-      connection_arn = "GitHub Repo Connection ARN"
+      connection_arn = "arn:aws:apprunner:us-east-1:117979987706:connection/cicd-repo/d940c059ccdd4466a82f95b50e4cdec3"
     }
 
     auto_deployments_enabled = false
 
     code_repository {
-      repository_url = "https://github.com/kaesar/democicd"
+      repository_url = "https://github.com/kaesar/cicddemo"
       source_code_version {
         type  = "BRANCH"
         value = "main"
       }
       code_configuration {
-        configuration_source = "API"  # 'REPOSITORY'
+        configuration_source = "API"
+        code_configuration_values {
+          build_command = "npm install && npm run build"
+          start_command = "npm start"
+          port          = "3000"
+          runtime       = "NODEJS_16"
+        }
       }
     }
   }
