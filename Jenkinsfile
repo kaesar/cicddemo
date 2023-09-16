@@ -1,7 +1,7 @@
 pipeline {
     agent { dockerfile true }
     stages {
-        stage('Agent Pipeline') {
+        stage('Demo Agent Pipeline') {
             steps {
                 sh '''
                   node -v
