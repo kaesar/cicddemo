@@ -19,11 +19,12 @@ Piensa que tienes dispositivos o drones que son capaces de transportar y entrega
 ```
 democicd/
 ├── __tests__/
-├── iac/
 ├── dist/
 │   └── index.js
 ├── data/
 │   └── database.json
+├── iac/
+├── pipe/
 ├── src/
 │   ├── adaptador/
 │   │   └── dbAccess.ts
@@ -110,17 +111,33 @@ node dist/index.js
 
 docker ps
 
-docker build -t cicddemo .
+docker build -t cicddemo:v1 .
 
-docker run -d -p 3000:3000 --name cicddemo cicddemo
+docker run -d -p 3000:3000 --name cicddemo cicddemo:v1
+
+docker logs cicddemo
 
 docker exec -it cicddemo /bin/sh
 
 docker stop cicddemo
 
-aws iam create-user --user-name cicd
+aws iam create-user --user-name cicd-user
 
-aws iam create-access-key --user-name cicd
+aws iam create-access-key --user-name cicd-user
+
+aws iam attach-user-policy --user-name cicd-user --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+aws iam attach-user-policy --user-name cicd-user --policy-arn arn:aws:iam::aws:policy/AWSAppRunnerFullAccess
+
+aws iam attach-user-policy --user-name cicd-user --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
+
+aws ecr create-repository --repository-name cicd-hub --region us-east-1
+
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 117979987706.dkr.ecr.us-east-1.amazonaws.com
+
+docker tag cicddemo:v1 117979987706.dkr.ecr.us-east-1.amazonaws.com/cicd-hub:v1
+
+docker push 117979987706.dkr.ecr.us-east-1.amazonaws.com/cicd-hub:v1
 
 aws s3api create-bucket --bucket tfstate-demo-2023 -region us-east-1
 

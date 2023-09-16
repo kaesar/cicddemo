@@ -4,29 +4,31 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket  = "tfstate-demo-2023"
-    key     = "terraform.tfstate"
-    region  = "us-east-1"
-    encrypt = true
+    bucket                  = "tfstate-demo-2023"
+    key                     = "terraform.tfstate"
+    region                  = "us-east-1"
+    encrypt                 = true
     shared_credentials_file = "./iac/.secretaws"
   }
 }
 
-/*resource "aws_iam_policy" "give_read_access_policy" {
-  name        = "GiveReadAccessPolicy"
-  description = "Policy to allow read access to secrets manager"
+/*resource "aws_iam_policy" "give_image_access_policy" {
+  name        = "GiveImageAccessPolicy"
+  description = "Policy to allow access to ECR by the service"
 
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Action   = "secretsmanager:GetSecretValue",
-        Effect   = "Allow",
-        Resource = "arn:aws:secretsmanager:us-east-1:123456789012:secret:your-secret-name-*",
+        "Effect" : "Allow",
+        "Action" : [
+          "ecr:*"
+        ],
+        "Resource" : "arn:aws:ecr:us-east-1:117979987706:*"
       },
     ],
   })
-}
+}*/
 
 resource "aws_iam_role" "apprunner_role" {
   name = "AppRunnerRole"
@@ -37,19 +39,24 @@ resource "aws_iam_role" "apprunner_role" {
         Action = "sts:AssumeRole",
         Effect = "Allow",
         Principal = {
-          Service = "tasks.apprunner.amazonaws.com",
+          Service = "apprunner.amazonaws.com",
         },
       },
     ],
   })
 
-  inline_policy {
-    name        = "GiveReadAccess"
-    policy_json = aws_iam_policy.give_read_access_policy.json
-  }
-}*/
+  /*inline_policy {
+    name   = "GiveImageAccess"
+    policy = aws_iam_policy.give_image_access_policy.policy
+  }*/
+}
 
-resource "aws_apprunner_service" "my_drone_service" {
+resource "aws_iam_role_policy_attachment" "apprunner_role_policy" {
+  role       = aws_iam_role.apprunner_role.arn
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+/*resource "aws_apprunner_service" "my_drone_service" {
   service_name = "MyDroneService"
 
   source_configuration {
@@ -61,12 +68,15 @@ resource "aws_apprunner_service" "my_drone_service" {
 
     code_repository {
       repository_url = "https://github.com/kaesar/cicddemo"
+      
       source_code_version {
         type  = "BRANCH"
         value = "main"
       }
+
       code_configuration {
         configuration_source = "API"
+
         code_configuration_values {
           build_command = "npm install && npm run build"
           start_command = "npm start"
@@ -80,17 +90,36 @@ resource "aws_apprunner_service" "my_drone_service" {
   health_check_configuration {
     path = "/health"
   }
+}*/
 
-  /*instance_configuration {
-    instance_role_arn = aws_iam_role.apprunner_role.arn
-  }*/
-}
-
-/*resource "aws_apprunner_service" "my_drone_service" {
+resource "aws_apprunner_service" "my_drone_service" {
   service_name = "MyDroneService"
+
   source_configuration {
+    authentication_configuration {
+      access_role_arn = aws_iam_role.apprunner_role.arn
+    }
+
+    auto_deployments_enabled = false
+
     image_repository {
-      image_identifier = "your-docker-image-url"  # Reemplaza con la URL de tu imagen de Docker
+      image_identifier      = "117979987706.dkr.ecr.us-east-1.amazonaws.com/cicd-hub:v1"
+      image_repository_type = "ECR"
+      image_configuration {
+        port = "3000"
+      }
     }
   }
+
+  health_check_configuration {
+    path = "/health"
+  }
+
+  //instance_configuration {
+  //  instance_role_arn = aws_iam_role.apprunner_role.arn
+  //}
+}
+
+/*resource "aws_ecr_repository" "my_docker_repository" {
+  name = "cicd-hub"
 }*/

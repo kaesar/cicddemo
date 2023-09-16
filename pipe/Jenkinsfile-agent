@@ -1,0 +1,14 @@
+pipeline {
+    agent { dockerfile true }
+    stages {
+        stage('Agent Pipeline') {
+            steps {
+                sh '''
+                  node -v
+                  git -v
+                  curl --version
+                '''
+            }
+        }
+    }
+}
