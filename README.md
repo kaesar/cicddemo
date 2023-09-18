@@ -24,7 +24,9 @@ democicd/
 ├── data/
 │   └── database.json
 ├── iac/
+│   └── main.tf
 ├── pipe/
+│   └── Jenkinsfile
 ├── src/
 │   ├── adaptador/
 │   │   └── dbAccess.ts
@@ -35,7 +37,7 @@ democicd/
 │   ├── rutas/
 │   │   └── apiRoutes.ts
 │   └── index.ts
-├── Jenkinsfile
+├── Dockerfile
 └── package.json
 ```
 
