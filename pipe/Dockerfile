@@ -8,11 +8,11 @@ RUN echo "deb [arch=$(dpkg --print-architecture) \
   https://download.docker.com/linux/debian \
   $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 RUN apt-get update && apt-get install -y docker-ce-cli
-RUN apt-get install -y apt-transport-https ca-certificates curl sudo gnupg2 software-propereis-common
+RUN apt-get install -y apt-transport-https ca-certificates curl sudo gnupg2 software-properties-common
 RUN apt-get install -y nodejs
 RUN apt-get install -y python3-pip
 RUN apt install awscli -y
-RUN pip3 install --upgrade awscli
+#RUN pip3 install --upgrade awscli
 RUN adduser jenkins sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER jenkins
