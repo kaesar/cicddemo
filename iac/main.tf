@@ -12,24 +12,6 @@ terraform {
   }
 }
 
-/*resource "aws_iam_policy" "give_image_access_policy" {
-  name        = "GiveImageAccessPolicy"
-  description = "Policy to allow access to ECR by the service"
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "ecr:*"
-        ],
-        "Resource" : "arn:aws:ecr:us-east-1:117979987706:*"
-      },
-    ],
-  })
-}*/
-
 resource "aws_iam_role" "apprunner_role" {
   name = "AppRunnerRole"
   assume_role_policy = jsonencode({
@@ -44,19 +26,14 @@ resource "aws_iam_role" "apprunner_role" {
       },
     ],
   })
-
-  /*inline_policy {
-    name   = "GiveImageAccess"
-    policy = aws_iam_policy.give_image_access_policy.policy
-  }*/
 }
 
-resource "aws_iam_role_policy_attachment" "apprunner_role_policy" {
-  role       = aws_iam_role.apprunner_role.arn
+/*resource "aws_iam_role_policy_attachment" "apprunner_role_policy" {
+  role       = aws_iam_role.apprunner_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
-}
+}*/
 
-/*resource "aws_apprunner_service" "my_drone_service" {
+resource "aws_apprunner_service" "my_drone_service" {
   service_name = "MyDroneService"
 
   source_configuration {
@@ -68,7 +45,7 @@ resource "aws_iam_role_policy_attachment" "apprunner_role_policy" {
 
     code_repository {
       repository_url = "https://github.com/kaesar/cicddemo"
-      
+
       source_code_version {
         type  = "BRANCH"
         value = "main"
@@ -90,36 +67,4 @@ resource "aws_iam_role_policy_attachment" "apprunner_role_policy" {
   health_check_configuration {
     path = "/health"
   }
-}*/
-
-resource "aws_apprunner_service" "my_drone_service" {
-  service_name = "MyDroneService"
-
-  source_configuration {
-    authentication_configuration {
-      access_role_arn = aws_iam_role.apprunner_role.arn
-    }
-
-    auto_deployments_enabled = false
-
-    image_repository {
-      image_identifier      = "117979987706.dkr.ecr.us-east-1.amazonaws.com/cicd-hub:v1"
-      image_repository_type = "ECR"
-      image_configuration {
-        port = "3000"
-      }
-    }
-  }
-
-  health_check_configuration {
-    path = "/health"
-  }
-
-  //instance_configuration {
-  //  instance_role_arn = aws_iam_role.apprunner_role.arn
-  //}
 }
-
-/*resource "aws_ecr_repository" "my_docker_repository" {
-  name = "cicd-hub"
-}*/

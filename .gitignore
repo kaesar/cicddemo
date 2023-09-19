@@ -8,6 +8,7 @@ package-lock.json
 npm-debug.log*
 *.log
 *.tgz
+*.off
 *.pid*
 pids
 .npm
