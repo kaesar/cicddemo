@@ -1,13 +1,40 @@
 pipeline {
     agent any
     tools { nodejs "nodejs" }
+    options {
+        skipDefaultCheckout(true)
+    }
     stages {
-        stage('Demo Agent Pipeline') {
+        stage('Checkout') {
             steps {
+                cleanWs()
+                //checkout scm
                 sh '''
-                  node -v
-                  git --version
-                  curl --version
+                git --version
+                curl --version
+                node -v
+                git clone https://github.com/kaesar/cicddemo.git
+                '''
+            }
+        }
+        stage('Buid NodeJS Code') {
+            steps {
+                dir('cicddemo') {
+                    sh '''
+                    npm install
+                    npm run build
+                    '''
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                /*script {
+                    def dockerImage = docker.build('cicddemo:v1', '-f ./cicddemo/Dockerfile .')
+                    dockerImage.push()
+                }*/
+                sh '''
+                docker -v
                 '''
             }
         }
