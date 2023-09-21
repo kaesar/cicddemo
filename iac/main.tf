@@ -68,3 +68,7 @@ resource "aws_apprunner_service" "my_drone_service" {
     path = "/health"
   }
 }
+
+output "service_url" {
+  value = aws_apprunner_service.my_drone_service.service_url
+}

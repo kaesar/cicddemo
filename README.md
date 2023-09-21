@@ -133,6 +133,12 @@ aws iam attach-user-policy --user-name cicd-user --policy-arn arn:aws:iam::aws:p
 
 aws iam attach-user-policy --user-name cicd-user --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
 
+aws iam attach-user-policy --user-name cicd-user --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
+
+aws iam list-users
+
+aws iam list-groups-for-user --user cicd-user
+
 aws ecr create-repository --repository-name cicd-hub --region us-east-1
 
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 117979987706.dkr.ecr.us-east-1.amazonaws.com
