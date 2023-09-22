@@ -73,11 +73,11 @@ pipeline {
             }
         }
     }
-    post {
+    /*post {  // Cleanup
         always {
             dir('cicddemo/iac') {
                 sh 'terraform destroy -f'
             }
         }
-    }
+    }*/
 }

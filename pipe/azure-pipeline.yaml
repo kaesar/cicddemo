@@ -1,52 +1,76 @@
 trigger:
-- main  # Cambia 'main' por la rama en la que deseas desencadenar el pipeline
-
-pr:
 - '*'
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  dockerRegistryServiceConnection: 'Nombre de la conexión del registro de Docker en Azure DevOps'
+  AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+  AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+  AWS_REGION: 'us-east-1'
 
 stages:
-- stage: Build
-  displayName: 'Construir la imagen de Docker'
+- stage: CheckoutClone
   jobs:
-  - job: BuildDockerImage
-    displayName: 'Construir y publicar la imagen de Docker'
-    steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: '$(dockerRegistryServiceConnection)'
-        repository: 'nombre-de-tu-repo-en-docker'
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-        tags: 'latest'
-
-- stage: Deploy
-  displayName: 'Implementar en AWS App Runner'
-  jobs:
-  - job: DeployToAWSAppRunner
-    displayName: 'Implementar en AWS App Runner'
+  - job: CheckoutCloneJob
     steps:
     - script: |
-        # Configura las credenciales de AWS
-        aws configure set aws_access_key_id $(AWS_ACCESS_KEY_ID)
-        aws configure set aws_secret_access_key $(AWS_SECRET_ACCESS_KEY)
-        aws configure set region $(AWS_REGION)
-        
-        # Ejecuta Terraform para implementar la infraestructura
-        cd iac
-        terraform init
-        terraform apply -auto-approve
-      displayName: 'Ejecutar Terraform para implementar'
+        git --version
+        curl --version
+        node -v
+        git clone https://github.com/kaesar/cicddemo.git
+      displayName: 'Checkout/Clone'
+    workspace:
+      clean: all
 
-    - task: AwsWebAppDeployment@4
+- stage: BuildNodeJSCode
+  jobs:
+  - job: BuildNodeJSCodeJob
+    steps:
+    - task: NodeTool@0
       inputs:
-        awsCredentials: 'AWS Service Connection'
-        applicationType: 'Node.js'
-        deploymentType: 'AWSAppRunner'
-        serviceName: 'MyDroneService'  # Nombre de tu servicio de App Runner
-        sourcePath: '$(Build.SourcesDirectory)'
+        versionSpec: '14.x'
+        displayName: 'Install Node.js'
+      displayName: 'Install Node.js'
+    
+    - script: |
+        cd cicddemo
+        npm install
+        npm run build
+      displayName: 'Build NodeJS Code'
+
+- stage: CheckBuildDockerImage
+  jobs:
+  - job: CheckBuildDockerImageJob
+    steps:
+    - script: |
+        docker --version
+        docker build -t cicddemo:v1 .
+      displayName: 'Check/Build Docker Image'
+
+- stage: PrepareIaCWithTerraform
+  jobs:
+  - job: PrepareIaCWithTerraformJob
+    steps:
+    - script: |
+        terraform -version
+        terraform init
+        terraform validate
+        terraform plan -out=tfplan
+      displayName: 'Prepare IaC with Terraform'
+
+- stage: DeployToAWS
+  jobs:
+  - job: DeployToAWSJob
+    steps:
+    - script: |
+        terraform apply -auto-approve
+      displayName: 'Deploy to AWS'
+
+- stage: Cleanup
+  jobs:
+  - job: CleanupJob
+    steps:
+    - script: |
+        terraform destroy -auto-approve
+      displayName: 'Cleanup'
