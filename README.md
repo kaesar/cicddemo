@@ -101,7 +101,7 @@ Ejemplo de datos para POST:
 ```
 
 ---
-
+<!--
 ## Algunos comandos Docker y otros
 
 A continuación se presentan ejemplos de algunos comandos con Docker y otros para validar en tu máquina, asumiendo que tienes instalado Docker bajo WSL (Windows Subsystem for Linux) o Colima (macOS/Linux, iniciando con: `colima sart`) y te encuentras ubicado dentro de la carpeta del proyecto...
@@ -163,3 +163,4 @@ terraform apply "tfplan" -auto-approve
 
 terraform destroy
 ```
+-->
