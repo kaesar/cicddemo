@@ -33,6 +33,15 @@ pipeline {
                 }
             }
         }
+        stage('Unit Tests NodeJS') {
+            steps {
+                dir('cicddemo') {
+                    sh '''
+                    npm test
+                    '''
+                }
+            }
+        }
         stage('Check/Build Docker Image') {
             steps {
                 dir('cicddemo') {
