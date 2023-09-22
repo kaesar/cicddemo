@@ -157,9 +157,9 @@ terraform init
 
 terraform validate
 
-terraform plan
+terraform plan -out=tfplan
 
-terraform apply -auto-approve
+terraform apply "tfplan" -auto-approve
 
 terraform destroy
 ```

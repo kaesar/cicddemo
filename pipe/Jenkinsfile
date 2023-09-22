@@ -1,52 +1,83 @@
 pipeline {
     agent any
-
+    tools { 
+        nodejs "nodejs"
+        //dockerTool "docker"
+    }
     environment {
+        PATH = "/opt/homebrew/bin:${env.PATH}"
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
         AWS_REGION = 'us-east-1'
     }
-
+    options {
+        skipDefaultCheckout(true)
+    }
     stages {
-        stage('Checkout') {
+        stage('Checkout/Clone') {
             steps {
-                checkout scm
+                cleanWs()
+                //checkout scm
+                sh '''
+                git --version
+                curl --version
+                node -v
+                git clone https://github.com/kaesar/cicddemo.git
+                '''
             }
         }
-
-        stage('Build Docker Image') {
+        stage('Build NodeJS Code') {
             steps {
-                script {
-                    def dockerImage = docker.build('nombre-de-tu-imagen-docker:latest', '-f ruta-a-tu-Dockerfile .')
-                    dockerImage.push()
+                dir('cicddemo') {
+                    sh '''
+                    npm install
+                    npm run build
+                    '''
                 }
             }
         }
-
-        stage('Deploy with Terraform') {
+        stage('Check/Build Docker Image') {
             steps {
-                sh 'cd iac'
-                sh 'terraform init'
-                sh 'terraform apply -auto-approve'
+                dir('cicddemo') {
+                    sh '''
+                    docker --version
+                    docker build -t cicddemo:v1 .
+                    '''
+                    /*script {
+                        def dockerImage = docker.build('cicddemo:v1', '.')
+                        //dockerImage.push()
+                    }*/
+                }
             }
         }
-
-        stage('Deploy to AWS App Runner') {
+        stage('Prepare IaC with Terraform') {
             steps {
-                script {
-                    sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID'
+                dir('cicddemo/iac') {
+                    sh '''
+                    terraform -version
+                    terraform init
+                    terraform validate
+                    terraform plan -out=tfplan
+                    '''
+                }
+            }
+        }
+        stage('Deploy to AWS') {
+            steps {
+                dir('cicddemo/iac') {
+                    /*sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID'
                     sh 'aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY'
-                    sh 'aws configure set region $AWS_REGION'
-
-                    sh 'aws apprunner create-service --service-name MyDroneService --source-configuration file://source-configuration.json'
+                    sh 'aws configure set region $AWS_REGION'*/
+                    sh 'terraform apply -auto-approve'
                 }
             }
         }
     }
-
     post {
         always {
-            // Limpieza o tareas de finalización si es necesario
+            dir('cicddemo/iac') {
+                sh 'terraform destroy -f'
+            }
         }
     }
 }
