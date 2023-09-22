@@ -1,6 +1,6 @@
 # Demostración CI-CD
 
-**~ GitHub (Repo) ~ Docker (Container) ~ Jenkins (Pipeline) ~ Terraform (IaC) ~ AWS App Runner (Serverless Containers - Cloud)~**
+**GitHub (Repo) ~ Docker (Container) ~ Jenkins (Pipeline) ~ Terraform (IaC) ~ AWS App Runner (Serverless Containers - Cloud)**
 
 ---
 
