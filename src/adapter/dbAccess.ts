@@ -1,11 +1,7 @@
 import loki from 'lokijs';
 
 const dbFile = process.env.DB || 'data/database.json';
-const db = new loki(dbFile, {
-    autoload: true,
-    autosave: true,
-    autosaveInterval: 4000
-});
+const db = new loki(dbFile, { autoload: true });
 
 const save = (collection: string, data: any): number => {
     let count = 0;
