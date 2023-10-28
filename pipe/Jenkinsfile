@@ -5,10 +5,10 @@ pipeline {
         //dockerTool "docker"
     }
     environment {
-        PATH = "/opt/homebrew/bin:${env.PATH}"
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        AWS_REGION = 'us-east-1'
+        PATH = "/usr/local/bin:${env.PATH}"
+        if (isMac()) {
+            PATH = "/opt/homebrew/bin:${env.PATH}"
+        }
     }
     options {
         skipDefaultCheckout(true)
@@ -62,22 +62,35 @@ pipeline {
         stage('Prepare IaC with Terraform') {
             steps {
                 dir('cicddemo/iac') {
-                    sh '''
-                    terraform -version
-                    terraform init
-                    terraform validate
-                    terraform plan -out=tfplan
-                    '''
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'AWS_CREDENTIALS_TF',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        sh '''
+                        terraform -version
+                        terraform init
+                        terraform validate
+                        terraform plan -out=tfplan
+                        '''
+                    }
                 }
             }
         }
-        stage('Deploy to AWS') {
+        stage('Apply IaC - Deploy AWS') {
             steps {
                 dir('cicddemo/iac') {
-                    /*sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID'
-                    sh 'aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY'
-                    sh 'aws configure set region $AWS_REGION'*/
-                    sh 'terraform apply -auto-approve'
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'AWS_CREDENTIALS_TF',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        sh '''
+                        terraform apply -auto-approve tfplan
+                        '''
+                    }
                 }
             }
         }
@@ -85,7 +98,14 @@ pipeline {
     /*post {  // Cleanup
         always {
             dir('cicddemo/iac') {
-                sh 'terraform destroy -f'
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'AWS_CREDENTIALS_TF',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                    sh 'terraform destroy -f'
+                }
             }
         }
     }*/
