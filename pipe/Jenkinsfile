@@ -41,7 +41,6 @@ pipeline {
             steps {
                 dir('cicddemo') {
                     sh '''
-                    npm test
                     npx jest --coverage --coverageReporters="json"
                     '''
                 }
@@ -71,44 +70,38 @@ pipeline {
                 }
             }
         }
-        stage('Setting AWS Secret') {
-            steps {
-                dir('cicddemo/iac') {
-                    script {
-                        withCredentials([[
-                            $class: 'AmazonWebServicesCredentialsBinding',
-                            credentialsId: 'AWS_CREDENTIALS_TF',
-                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                        ]]) {
-                            sh """
-                            echo '[default]' > ./.secretaws
-                            echo 'aws_access_key_id = $AWS_ACCESS_KEY_ID' >> ./.secretaws
-                            echo 'aws_secret_access_key = $AWS_SECRET_ACCESS_KEY' >> ./.secretaws
-                            """
-                        }
-                    }
-                }
-            }
-        }
         stage('Prepare IaC with Terraform') {
             steps {
                 dir('cicddemo/iac') {
-                    sh '''
-                    terraform -version
-                    terraform init
-                    terraform validate
-                    terraform plan -out=tfplan
-                    '''
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'AWS_CREDENTIALS_TF',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        sh '''
+                        terraform -version
+                        terraform init
+                        terraform validate
+                        terraform plan -out=tfplan
+                        '''
+                    }
                 }
             }
         }
         stage('Apply IaC - Deploy AWS') {
             steps {
                 dir('cicddemo/iac') {
-                    sh '''
-                    terraform apply -auto-approve tfplan
-                    '''
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'AWS_CREDENTIALS_TF',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        sh '''
+                        terraform apply -auto-approve tfplan
+                        '''
+                    }
                 }
             }
         }
