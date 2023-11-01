@@ -5,10 +5,11 @@ pipeline {
         //dockerTool "docker"
     }
     environment {
-        PATH = "/usr/local/bin:${env.PATH}"
-        if (isMac()) {
-            PATH = "/opt/homebrew/bin:${env.PATH}"
-        }
+        PATH = "/opt/homebrew/bin:${env.PATH}"
+        //PATH = "/usr/local/bin:${env.PATH}"
+        //if (isMac()) {
+        //    PATH = "/opt/homebrew/bin:${env.PATH}"
+        //}
     }
     options {
         skipDefaultCheckout(true)
@@ -41,10 +42,22 @@ pipeline {
                 dir('cicddemo') {
                     sh '''
                     npm test
+                    npx jest --coverage --coverageReporters="json"
                     '''
                 }
             }
         }
+        /*stage('Test Coverage %') {
+            steps {
+                script {
+                    def coverageReport = readFile('cicddemo/coverage/coverage-summary.json')
+                    def json = new groovy.json.JsonSlurper().parseText(coverageReport)
+                    def coveragePercentage = json.total.lines.pct
+        
+                    echo "Coverage Percentage: $coveragePercentage%"
+                }
+            }
+        }*/
         stage('Check/Build Docker Image') {
             steps {
                 dir('cicddemo') {
@@ -52,45 +65,50 @@ pipeline {
                     docker --version
                     docker build -t cicddemo:v1 .
                     '''
-                    /*script {
-                        def dockerImage = docker.build('cicddemo:v1', '.')
-                        //dockerImage.push()
-                    }*/
+                    //script {
+                    //    def dockerImage = docker.build('cicddemo:v1', '.')
+                    //}
+                }
+            }
+        }
+        stage('Setting AWS Secret') {
+            steps {
+                dir('cicddemo/iac') {
+                    script {
+                        withCredentials([[
+                            $class: 'AmazonWebServicesCredentialsBinding',
+                            credentialsId: 'AWS_CREDENTIALS_TF',
+                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                        ]]) {
+                            sh """
+                            echo '[default]' > ./.secretaws
+                            echo 'aws_access_key_id = $AWS_ACCESS_KEY_ID' >> ./.secretaws
+                            echo 'aws_secret_access_key = $AWS_SECRET_ACCESS_KEY' >> ./.secretaws
+                            """
+                        }
+                    }
                 }
             }
         }
         stage('Prepare IaC with Terraform') {
             steps {
                 dir('cicddemo/iac') {
-                    withCredentials([[
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: 'AWS_CREDENTIALS_TF',
-                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]]) {
-                        sh '''
-                        terraform -version
-                        terraform init
-                        terraform validate
-                        terraform plan -out=tfplan
-                        '''
-                    }
+                    sh '''
+                    terraform -version
+                    terraform init
+                    terraform validate
+                    terraform plan -out=tfplan
+                    '''
                 }
             }
         }
         stage('Apply IaC - Deploy AWS') {
             steps {
                 dir('cicddemo/iac') {
-                    withCredentials([[
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: 'AWS_CREDENTIALS_TF',
-                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]]) {
-                        sh '''
-                        terraform apply -auto-approve tfplan
-                        '''
-                    }
+                    sh '''
+                    terraform apply -auto-approve tfplan
+                    '''
                 }
             }
         }
