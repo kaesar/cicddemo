@@ -8,7 +8,7 @@ terraform {
     key                     = "terraform.tfstate"
     region                  = "us-east-1"
     encrypt                 = true
-    shared_credentials_file = "./iac/.secretaws"
+    shared_credentials_file = "./.secretaws"
   }
 }
 
