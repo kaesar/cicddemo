@@ -4,7 +4,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket                  = "tfstate-demo-2023"
+    bucket                  = local.bucket_name
     key                     = "terraform.tfstate"
     region                  = "us-east-1"
     encrypt                 = true
@@ -28,23 +28,18 @@ resource "aws_iam_role" "apprunner_role" {
   })
 }
 
-/*resource "aws_iam_role_policy_attachment" "apprunner_role_policy" {
-  role       = aws_iam_role.apprunner_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
-}*/
-
 resource "aws_apprunner_service" "my_drone_service" {
-  service_name = "MyDroneService"
+  service_name = local.service_name
 
   source_configuration {
     authentication_configuration {
-      connection_arn = "arn:aws:apprunner:us-east-1:117979987706:connection/cicd-repo/d940c059ccdd4466a82f95b50e4cdec3"
+      connection_arn = local.connection_arn
     }
 
     auto_deployments_enabled = false
 
     code_repository {
-      repository_url = "https://github.com/kaesar/cicddemo"
+      repository_url = local.git_repo_url
 
       source_code_version {
         type  = "BRANCH"
@@ -57,7 +52,7 @@ resource "aws_apprunner_service" "my_drone_service" {
         code_configuration_values {
           build_command = "npm install && npm run build"
           start_command = "npm start"
-          port          = "3000"
+          port          = local.container_port
           runtime       = "NODEJS_16"
         }
       }

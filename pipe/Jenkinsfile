@@ -43,17 +43,6 @@ pipeline {
                 }
             }
         }
-        /*stage('Test Coverage %') {
-            steps {
-                script {
-                    def coverageReport = readFile('cicddemo/coverage/coverage-summary.json')
-                    def json = new groovy.json.JsonSlurper().parseText(coverageReport)
-                    def coveragePercentage = json.total.lines.pct
-        
-                    echo "Coverage Percentage: $coveragePercentage%"
-                }
-            }
-        }*/
         stage('Check/Build Docker Image') {
             steps {
                 dir('cicddemo') {
