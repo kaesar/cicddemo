@@ -1,15 +1,15 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
 terraform {
   backend "s3" {
-    bucket                  = local.bucket_name
+    bucket                  = "tfstate-demo-2023"
     key                     = "terraform.tfstate"
     region                  = "us-east-1"
     encrypt                 = true
     shared_credentials_file = "./.secretaws"
   }
+}
+
+provider "aws" {
+  region = "us-east-1"
 }
 
 resource "aws_iam_role" "apprunner_role" {

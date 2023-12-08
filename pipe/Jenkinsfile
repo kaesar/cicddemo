@@ -2,7 +2,6 @@ pipeline {
     agent any
     tools { 
         nodejs "nodejs"
-        //dockerTool "docker"
     }
     environment {
         PATH = "/opt/homebrew/bin:${env.PATH}"
@@ -15,7 +14,6 @@ pipeline {
         stage('Checkout/Clone') {
             steps {
                 cleanWs()
-                //checkout scm
                 sh '''
                 git --version
                 curl --version
@@ -50,9 +48,6 @@ pipeline {
                     docker --version
                     docker build -t cicddemo:v1 .
                     '''
-                    //script {
-                    //    def dockerImage = docker.build('cicddemo:v1', '.')
-                    //}
                 }
             }
         }
@@ -92,18 +87,4 @@ pipeline {
             }
         }
     }
-    /*post {  // Cleanup
-        always {
-            dir('cicddemo/iac') {
-                    withCredentials([[
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: 'AWS_CREDENTIALS_TF',
-                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]]) {
-                    sh 'terraform destroy -f'
-                }
-            }
-        }
-    }*/
 }
