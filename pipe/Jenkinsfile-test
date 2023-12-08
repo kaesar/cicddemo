@@ -2,7 +2,6 @@ pipeline {
     agent any
     tools { 
         nodejs "nodejs"
-        //dockerTool "docker"
     }
     environment {
         PATH = "/opt/homebrew/bin:${env.PATH}"
@@ -14,7 +13,6 @@ pipeline {
         stage('Checkout/Clone') {
             steps {
                 cleanWs()
-                //checkout scm
                 sh '''
                 git --version
                 curl --version
@@ -49,10 +47,6 @@ pipeline {
                     docker --version
                     docker build -t cicddemo:v1 .
                     '''
-                    /*script {
-                        def dockerImage = docker.build('cicddemo:v1', '.')
-                        //dockerImage.push()
-                    }*/
                 }
             }
         }
@@ -71,9 +65,6 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 dir('cicddemo/iac') {
-                    /*sh 'aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID'
-                    sh 'aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY'
-                    sh 'aws configure set region $AWS_REGION'*/
                     sh 'terraform apply -auto-approve'
                 }
             }
